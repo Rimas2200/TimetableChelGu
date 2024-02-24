@@ -1,0 +1,878 @@
+---
+openapi: 3.0.0
+info:
+  title: TimetableChelGu
+  description: description
+  version: 0.0.1
+servers:
+- url: http://localhost:8080/api/v1/
+  description: Dev server
+paths:
+  /register:
+    post:
+      tags:
+      - user
+      summary: Регистрация нового пользователя
+      operationId: postRegister
+      parameters:
+      - name: username
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Alex
+      - name: group
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: mp_203
+      - name: email
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: alex@mail.ru
+      - name: password
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: tjD97zhUON
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        "200":
+          description: Пользователь успешно зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "409":
+          description: Имя пользователя уже существует
+  /auth:
+    post:
+      tags:
+      - user
+      summary: Авторизация пользователя
+      operationId: postAuthorization
+      parameters:
+      - name: email
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: alex@mail.ru
+      - name: password
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: tjD97zhUON
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        "200":
+          description: Пользователь успешно авторизирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "401":
+          description: Не авторизован
+  /schedules:
+    get:
+      tags:
+      - schedules
+      summary: Получить список пар
+      description: Возвращает список всех пар
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          maximum: 10
+          minimum: 1
+          type: integer
+          default: 10
+      responses:
+        "200":
+          description: успешно выполнен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+  /schedules/{teacher_name}:
+    get:
+      tags:
+      - schedules
+      summary: Получить пары по преподавателю
+      description: Возвращает пары преподавателя
+      parameters:
+      - name: teacher_name
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Бутько Л. М.
+      responses:
+        "200":
+          description: Успешно выполнен
+        "404":
+          description: Расписание не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleTeacher'
+  /schedules/{group_name}:
+    get:
+      tags:
+      - schedules
+      summary: Получить пары по группе
+      description: Возвращает пары группы
+      parameters:
+      - name: group_name
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: МП-203
+      responses:
+        "200":
+          description: Успешно выполнен
+        "404":
+          description: Расписание не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+  /schedules/{group_name}/{day_of_the_week}/{week}:
+    get:
+      tags:
+      - schedules
+      summary: Получить пары на основной экран пользователя
+      description: Возвращает пары на основной экран пользователя
+      parameters:
+      - name: group_name
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: МП-203
+      - name: day_of_the_week
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Понедельник
+      - name: week
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 1Н
+      responses:
+        "200":
+          description: Успешно выполнен
+        "404":
+          description: Расписание не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+  /users:
+    get:
+      tags:
+      - lists
+      summary: Получение списока пользователей
+      description: Возвращает список пользователей
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          maximum: 10
+          minimum: 1
+          type: integer
+          default: 10
+      responses:
+        "200":
+          description: успешно выполнен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+  /addition/group:
+    post:
+      tags:
+      - addition
+      summary: Добавление группы
+      description: Добавление группы
+      parameters:
+      - name: name
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: МП-203
+      - name: direction_abbreviation
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: МП
+      responses:
+        "200":
+          description: Успешно выполнен
+        "409":
+          description: Группа уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+  /addition/direction:
+    post:
+      tags:
+      - addition
+      summary: Добавление дисциплины
+      description: Добавление дисциплины
+      parameters:
+      - name: direction_abbreviation
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: МП
+      - name: name
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Прикладная математика и информатика
+      - name: facylty
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Математический факультет
+      responses:
+        "200":
+          description: Успешно выполнен
+        "409":
+          description: Направление уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Direction'
+  /addition/faculty:
+    post:
+      tags:
+      - addition
+      summary: Добавление факульета
+      description: Добавление факультета
+      parameters:
+      - name: faculty_name
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Математический факультет
+      - name: dean_fullname
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Сташкевич Д.С.
+      responses:
+        "200":
+          description: Успешно выполнен
+        "409":
+          description: Факультет уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Faculty'
+  /addition/coupleType:
+    post:
+      tags:
+      - addition
+      summary: Добавление типа пар
+      description: Добавление типа пар
+      parameters:
+      - name: pair_type
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Лаб.
+      responses:
+        "200":
+          description: Успешно выполнен
+        "409":
+          description: Тип пар уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoupleType'
+  /addition/classroom:
+    post:
+      tags:
+      - addition
+      summary: Добавление аудитории
+      description: Добавление аудитории
+      parameters:
+      - name: room_number
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: 445
+      - name: building
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: 1
+      responses:
+        "200":
+          description: Успешно выполнен
+        "409":
+          description: Аудитория уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Classroom'
+  /addition/professor:
+    post:
+      tags:
+      - addition
+      summary: Добавление преподавателя
+      description: Добавление преподавателя
+      parameters:
+      - name: last_name
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Абаимов
+      - name: first_name
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Андрей
+      - name: middle_name
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Алексеевич
+      - name: position
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Ассистент
+      - name: departament
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Вычислительная механика и информационнные технологии
+      responses:
+        "200":
+          description: Успешно выполнен
+        "409":
+          description: Преподаватель уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Professor'
+  /addition/schedule:
+    post:
+      tags:
+      - addition
+      summary: Добавление расписания
+      description: Добавление рассписания
+      parameters:
+      - name: discipline
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: ФИЗИКА (ПР.)
+      - name: classroom
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Ауд. 212 (2)
+      - name: group_name
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: МП-203
+      - name: pair_number
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: integer
+        example: 4
+      - name: teacher_name
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Бутько Л. М.
+      - name: day_of_the_week
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Понедельник
+      - name: week
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: 1Н
+      - name: subgroup
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: вторая подгруппа
+      responses:
+        "200":
+          description: Успешно выполнен
+        "409":
+          description: Преподаватель уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+  /faculties:
+    get:
+      tags:
+      - lists
+      summary: Получение списка факультетов
+      description: Получение списка факультетов
+      responses:
+        "200":
+          description: Успешно выполнен
+        "404":
+          description: Факультет не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Faculties'
+  /faculties/direction/{faculty}:
+    get:
+      tags:
+      - lists
+      summary: Получение списка направлений
+      description: Получение списка направлений
+      parameters:
+      - name: faculty
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Математический факультет
+      responses:
+        "200":
+          description: Успешно выполнен
+        "404":
+          description: Факультет не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Directions'
+  /faculties/direction/group/{direction_abbreviation}:
+    get:
+      tags:
+      - lists
+      summary: Получение списка групп
+      description: Получение списка групп
+      parameters:
+      - name: direction_abbreviation
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: МП
+      responses:
+        "200":
+          description: Успешно выполнен
+        "404":
+          description: Направление не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Groups'
+components:
+  schemas:
+    User:
+      required:
+      - email
+      - group
+      - id
+      - password
+      - username
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Идентификатор пользователя
+          example: 4643
+        username:
+          type: string
+          description: Имя пользователя
+          example: Дмитрий
+        password:
+          type: string
+          description: Пароль пользователя
+          example: tjD97zhUON
+        email:
+          type: string
+          description: Почта пользователя
+          example: dmitriy@mail.ru
+        group:
+          type: string
+          description: Группа пользователя
+          example: МП-203
+    Users:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+    Group:
+      required:
+      - direction_abbreviation
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Индентификатор группы
+          example: 435
+        name:
+          type: string
+          description: Название группы
+          example: МП-203
+        direction_abbreviation:
+          type: string
+          description: аббревиатура направления
+          example: МП
+    Groups:
+      type: array
+      items:
+        $ref: '#/components/schemas/Group'
+    Direction:
+      required:
+      - direction_abbreviation
+      - faculty
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Индентификатор направления
+          example: 43
+        direction_abbreviation:
+          type: string
+          description: аббревиатура направления
+          example: МП
+        name:
+          type: string
+          description: Название направления
+          example: Прикладная математика и информатика
+        faculty:
+          type: string
+          description: Факультет
+          example: Математический факультет
+    Directions:
+      type: array
+      items:
+        $ref: '#/components/schemas/Direction'
+    Faculty:
+      required:
+      - dean_fullname
+      - faculty_name
+      - id
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Идентификатор факультета
+          example: 4
+        faculty_name:
+          type: string
+          description: Название факультета
+          example: Биологический факультет
+        dean_fullname:
+          type: string
+          description: ФИО декана факультета
+          example: Сташкевич Д.С.
+    Faculties:
+      type: array
+      items:
+        $ref: '#/components/schemas/Faculty'
+    CoupleType:
+      required:
+      - id
+      - pair_type
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Идентификатор типа пары
+          example: 3
+        pair_type:
+          type: string
+          description: Тип пары
+          example: Лаб.
+    Classroom:
+      required:
+      - building
+      - id
+      - room_number
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Идентификатор аудитории
+          example: 234
+        room_number:
+          type: string
+          description: Номер аудитории
+          example: A11
+        building:
+          type: string
+          description: Корпус аудитории
+          example: "1"
+    Professor:
+      required:
+      - departament
+      - first_name
+      - id
+      - last_name
+      - middle_name
+      - position
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Идентификатор преподавателя
+          example: 34
+        last_name:
+          type: string
+          description: Фамилия преподавателя
+          example: Абаимов
+        first_name:
+          type: string
+          description: Имя преподавателя
+          example: Андрей
+        middle_name:
+          type: string
+          description: Отчество преподавателя
+          example: Алексеевич
+        position:
+          type: string
+          description: Должность преподавателя
+          example: Ассистент
+        departament:
+          type: string
+          description: Кафедра преподавателя
+          example: Вычислительная механика и информационнные технологии
+    Schedule:
+      required:
+      - classroom
+      - day_of_the_week
+      - discipline
+      - group_name
+      - id
+      - pair_number
+      - subgroup
+      - teacher_name
+      - week
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Идентификатор
+          example: 5784
+        discipline:
+          type: string
+          description: Название дисциплины
+          example: ФИЗИКА (ПР.)
+        classroom:
+          type: string
+          description: Номер аудитории
+          example: АУД. 212 (2)
+        group_name:
+          type: string
+          description: Название группы
+          example: МП-203
+        pair_number:
+          type: string
+          description: Номер пары
+          example: "4"
+        teacher_name:
+          type: string
+          description: ФИО преподавателя
+          example: Бутько Л. М.
+        day_of_the_week:
+          type: string
+          description: День недели
+          example: Понедельник
+        week:
+          type: string
+          description: Четность недели
+          enum:
+          - 1Н
+          - 2Н
+          - general
+        subgroup:
+          type: string
+          description: Подгруппа
+          example: вторая подгруппа
+    ScheduleTeacher:
+      required:
+      - classroom
+      - day_of_the_week
+      - discipline
+      - group_name
+      - id
+      - pair_number
+      - subgroup
+      - teacher_name
+      - week
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Идентификатор
+          example: 5784
+        discipline:
+          type: string
+          description: Название дисциплины
+          example: ФИЗИКА (ПР.)
+        classroom:
+          type: string
+          description: Номер аудитории
+          example: АУД. 212 (2)
+        group_name:
+          type: array
+          description: Список групп
+          items:
+            type: string
+            example: "[\"МП-201\",\"МП-202\",\"МП-203\"]"
+        pair_number:
+          type: string
+          description: Номер пары
+          example: "4"
+        teacher_name:
+          type: string
+          description: ФИО преподавателя
+          example: Бутько Л. М.
+        day_of_the_week:
+          type: string
+          description: День недели
+          example: Понедельник
+        week:
+          type: string
+          enum:
+          - 1Н
+          - 2Н
+          - general
+        subgroup:
+          type: string
+          description: Подгруппа
+          example: вторая подгруппа
